@@ -1,4 +1,4 @@
-# 📈 Data-Runner — PSX AI Quant Dashboard
+# 📈 Data-Runner — AI Powered PSX Dashboard
 
 <div align="center">
 
