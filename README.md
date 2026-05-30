@@ -289,38 +289,6 @@ Avg     AUC=0.537±0.002  (very stable)
 
 ---
 
-## 📌 Resume Bullet Points
-
-> Copy-paste ready for your CV / LinkedIn
-
----
-
-**Software Engineer / ML Engineer roles:**
-
-- Built a full-stack AI quantitative trading platform for the Pakistan Stock Exchange using Python, featuring a GRU + XGBoost + CatBoost ensemble that achieved **55% balanced accuracy** and **AUC 0.562** on held-out test data across 27 stocks and 83,000+ training samples
-
-- Engineered a **28-feature time-series pipeline** including novel macro context features (KSE-100 index return, PKR/USD exchange rate, Brent crude oil) that became the **#1 predictive feature** by XGBoost gain importance
-
-- Designed and implemented **anti-collapse ensemble training** with isotonic rank-normalization, per-model MCC-optimal threshold search, and dynamic AUC-weighted blending — solving probability scale mismatch between GRU and tree-based models
-
-- Integrated **FinBERT transformer sentiment analysis** on live Google News RSS feeds with keyword-based fallback for offline inference
-
-- Developed a **7-tab Streamlit dashboard** with 9 interactive Plotly charts, a Monte Carlo compounding forecast engine with uncertainty bands, a walk-forward backtester with realistic slippage/commission modeling, and a real-time AI screener across 22 PSX stocks
-
----
-
-**Data Science / Quant roles:**
-
-- Implemented a multi-horizon label generation system using **ATR-adjusted volatility thresholds** averaged over 5/10/20-day forward windows, reducing noise labels and improving model discriminability
-
-- Applied **GRU + Multi-Head Attention** architecture with last-timestep and global-average-pooling concatenation for financial time-series classification, trained with binary cross-entropy and boosted class weights on 60-day rolling sequences
-
-- Achieved **walk-forward AUC stability of 0.537 ± 0.002** across 3 time folds, demonstrating consistent out-of-sample generalization on Pakistan Stock Exchange data from 2013–2025
-
-- Built a **stacking meta-model** (Logistic Regression) that combines GRU, XGBoost, and CatBoost probability outputs, with isotonic calibration to correct probability scale mismatches before ensemble blending
-
----
-
 ## ⚠️ Disclaimer
 
 This project is for **educational and research purposes only**. It is not financial advice. Past model performance does not guarantee future returns. Always consult a licensed financial advisor before making investment decisions.
