@@ -1,0 +1,13 @@
+streamlit>=1.35.0
+plotly>=5.22.0
+pandas>=2.2.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+yfinance>=0.2.40
+feedparser>=6.0.11
+joblib>=1.4.0
+requests>=2.31.0
+tensorflow-cpu>=2.16.0
+transformers>=4.40.0
+torch>=2.2.0
+xgboost>=2.0.0
