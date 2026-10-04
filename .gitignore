@@ -1,6 +1,4 @@
-models/ 
-data/ 
-__pycache__/ 
-logs/ 
-.streamlit/ 
-catboost_info/ 
+__pycache__/
+catboost_info/
+logs/
+*.pyc

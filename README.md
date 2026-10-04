@@ -1,4 +1,4 @@
-# 📈 Data-Runner — AI Powered PSX Dashboard
+# Data-Runner — AI Powered PSX Dashboard
 
 <div align="center">
 
@@ -6,7 +6,7 @@
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.21-orange?style=for-the-badge&logo=tensorflow)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.57-red?style=for-the-badge&logo=streamlit)
 ![XGBoost](https://img.shields.io/badge/XGBoost-3.2-green?style=for-the-badge)
-![CatBoost](https://img.shields.io/badge/CatBoost-✓-yellow?style=for-the-badge)
+![CatBoost](https://img.shields.io/badge/CatBoost--yellow?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)
 
 **An end-to-end AI quantitative trading dashboard for the Pakistan Stock Exchange (PSX), powered by a GRU + XGBoost + CatBoost ensemble with FinBERT sentiment analysis.**
@@ -17,9 +17,11 @@
 
 ---
 
-## 🖥️ Dashboard Preview
+## Dashboard Preview
 
-> **7 fully interactive tabs** — Overview · Charts · Compare · Screener · Backtest · Forecast · News
+> **7 fully interactive tabs** — Home · Charts · Compare · Screener · Backtest · Forecast · News
+>
+> **Mobile-first UI** — bottom navigation bar, card-based metrics, touch-sized controls, compact charts and no sidebar. Open it on a phone and use *Add to Home Screen* for an app-like launch.
 
 | Overview Tab | Charts Tab |
 |:---:|:---:|
@@ -35,7 +37,7 @@
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -94,9 +96,9 @@
 
 ---
 
-## ✨ Features
+## Features
 
-### 🤖 ML Ensemble
+### ML Ensemble
 - **GRU + Multi-Head Attention** — 2-layer GRU (192→96 units) with 4-head self-attention, last-step + global-average pooling concatenation, trained with binary cross-entropy and boosted class weights
 - **XGBoost** — 1,000-tree gradient boosting with AUC optimization, `scale_pos_weight` for class imbalance, early stopping at 50 rounds
 - **CatBoost** — Gradient boosting with `bagging_temperature`, `random_strength`, and balanced class weighting
@@ -105,7 +107,7 @@
 - **Dynamic ensemble weights** — Proportional to each model's test-set ROC-AUC (not hardcoded)
 - **MCC-optimal thresholds** — Per-model threshold search that rejects collapse (>85% one-class predictions)
 
-### 📊 Feature Engineering (28 features)
+### Feature Engineering (28 features)
 
 | Category | Features |
 |---|---|
@@ -117,24 +119,24 @@
 | **Market Microstructure** | VWAP_Dev, RegimeScore |
 | **Macro Context** | KSE100_Ret, PKRUSD_Ret, Oil_Ret, MacroMomentum |
 
-### 📈 Dashboard Tabs
+### Dashboard Tabs
 
 | Tab | Description |
 |---|---|
-| **📊 Overview** | 16 metric cards: price, AI signal, confidence, risk, CAGR, max drawdown, RSI, MA trend, VaR, regime, sentiment |
-| **📈 Charts** | 9 Plotly charts: candlestick+volume, moving averages, RSI, MACD, OBV+VWAP, relative volume, volume spike z-score, price anomaly events, anomaly score |
-| **⚖️ Compare** | Side-by-side metric grid for any two stocks + normalized performance chart + 5-year forecast |
-| **🔍 Screener** | AI-ranks all 22 PSX stocks by ensemble confidence with sector filtering |
-| **⚡ Backtest** | Walk-forward backtest with configurable commission, slippage, signal threshold; equity curve vs buy-and-hold, Sharpe, win rate, trade log |
-| **🔮 Forecast** | Dynamic sequential compounding engine with Monte Carlo uncertainty bands (P15–P85), portfolio simulation, VaR, Calmar ratio, XGBoost feature importance |
-| **📰 News** | Google News RSS → FinBERT sentiment scoring with keyword fallback |
+| **Overview** | 16 metric cards: price, AI signal, confidence, risk, CAGR, max drawdown, RSI, MA trend, VaR, regime, sentiment |
+| **Charts** | 9 Plotly charts: candlestick+volume, moving averages, RSI, MACD, OBV+VWAP, relative volume, volume spike z-score, price anomaly events, anomaly score |
+| **Compare** | Side-by-side metric grid for any two stocks + normalized performance chart + 5-year forecast |
+| **Screener** | AI-ranks all 22 PSX stocks by ensemble confidence with sector filtering |
+| **Backtest** | Walk-forward backtest with configurable commission, slippage, signal threshold; equity curve vs buy-and-hold, Sharpe, win rate, trade log |
+| **Forecast** | Dynamic sequential compounding engine with Monte Carlo uncertainty bands (P15–P85), portfolio simulation, VaR, Calmar ratio, XGBoost feature importance |
+| **News** | Google News RSS → FinBERT sentiment scoring with keyword fallback |
 
-### 🌍 Stock Universe
+### Stock Universe
 **22 PSX stocks** across Fertilizer, Banking, Oil & Gas, Technology, Auto, Cement, Power, and Telecom — plus **5 US stocks** (AAPL, MSFT, GOOGL, NVDA, TSLA)
 
 ---
 
-## 🧠 ML Models
+## ML Models
 
 ### Training Pipeline
 ```
@@ -167,7 +169,7 @@ python train_model.py
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 ### Prerequisites
 - Python 3.11+
@@ -225,7 +227,7 @@ Open `http://localhost:8501` in your browser.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 stock-dashboard/
@@ -248,7 +250,7 @@ stock-dashboard/
 
 ---
 
-## 📄 Results & Metrics
+## Results & Metrics
 
 ### Feature Importance (XGBoost Gain)
 ```
@@ -275,7 +277,7 @@ Avg     AUC=0.537±0.002  (very stable)
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -289,18 +291,18 @@ Avg     AUC=0.537±0.002  (very stable)
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This project is for **educational and research purposes only**. It is not financial advice. Past model performance does not guarantee future returns. Always consult a licensed financial advisor before making investment decisions.
 
 ---
 
-## 📜 License
+## License
 
 MIT License — free to use, modify, and distribute with attribution.
 
 ---
 
 <div align="center">
-Made with ☕ and too many training runs · PSX Data via yFinance · Sentiment via FinBERT
+Made with and too many training runs · PSX Data via yFinance · Sentiment via FinBERT
 </div>

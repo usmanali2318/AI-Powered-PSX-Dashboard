@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PSX AI · Quant Terminal</title><meta name="theme-color" content="#0a0a0c">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 75 L35 45 L55 62 L90 20' stroke='%2300f0ff' stroke-width='10' fill='none'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly-cartesian.min.js"></script>
+<style>
+:root{--bg:#0a0a0c;--card:#121217;--line:#1f1f28;--txt:#fafafa;--mut:#9a9aa6;--acc:#ff9f00;--up:#22c55e;--dn:#ef4444}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{background:var(--bg);color:var(--txt);font:15px/1.55 Manrope,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom);overflow-x:hidden}
+a{color:inherit;text-decoration:none}.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+.disp{font-family:Cinzel,serif}
+nav{position:sticky;top:0;z-index:20;background:#0a0a0cd9;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+nav .wrap{display:flex;align-items:center;gap:18px;height:60px}
+.logo{font:900 1.2rem Cinzel;letter-spacing:2px}.logo b{color:var(--acc)}
+nav .l{display:flex;gap:18px;color:var(--mut);font-size:.85rem;margin-left:auto}nav .l a:hover{color:var(--txt)}
+select{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font:600 .85rem Manrope;max-width:200px;min-height:40px}
+@media(max-width:760px){nav .l{display:none}select{margin-left:auto}}
+.tape{border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;background:#0d0d11}
+.tape div{display:inline-block;padding:9px 0;animation:mq 60s linear infinite}.tape span{margin:0 22px;font-size:.78rem;color:var(--mut)}.tape b{margin-left:6px}
+@keyframes mq{to{transform:translateX(-50%)}}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.hero{position:relative;padding:64px 0 44px;overflow:hidden}
+.hero::before{content:"";position:absolute;width:640px;height:640px;right:-160px;top:-260px;background:radial-gradient(circle,#ff9f0033,transparent 65%);animation:fl 9s ease-in-out infinite alternate}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(#ffffff08 1px,transparent 1px) 0 0/100% 46px,linear-gradient(90deg,#ffffff06 1px,transparent 1px) 0 0/46px 100%;-webkit-mask-image:linear-gradient(#000,transparent 85%);mask-image:linear-gradient(#000,transparent 85%)}
+@keyframes fl{to{transform:translate(-60px,50px) scale(1.15)}}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr 1fr;gap:34px;align-items:center}
+@media(max-width:820px){.hero .wrap{grid-template-columns:1fr}.hero{padding-top:40px}}
+.tag{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{font:900 clamp(2rem,6vw,3.6rem)/1.05 Cinzel;margin:8px 0 14px}
+.price{font:300 clamp(2.6rem,9vw,4.8rem)/1 Manrope;letter-spacing:-2px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.pill{padding:7px 14px;border-radius:999px;font-weight:800;font-size:.82rem;border:1px solid var(--line);background:var(--card)}
+.sig{font-weight:800;letter-spacing:.5px;color:#000}
+.gauge{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:22px 20px 18px;text-align:center}
+.gauge svg{width:100%;max-width:300px}.needle{transform-origin:100px 100px;transition:transform 1.2s cubic-bezier(.2,1.2,.3,1)}
+.gauge .big{font:800 2rem Manrope;margin-top:-6px}.gauge small{color:var(--mut);display:block}
+.mini{display:flex;justify-content:space-around;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:.78rem;color:var(--mut)}.mini b{display:block;color:var(--txt);font-size:1.05rem}
+section{padding:46px 0}h2{font:700 1.6rem Cinzel;margin-bottom:6px}.sub{color:var(--mut);margin-bottom:22px;font-size:.9rem}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.k{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;transition:.25s}.k:hover{border-color:var(--acc);transform:translateY(-3px)}
+.k span{font-size:.66rem;letter-spacing:1.3px;text-transform:uppercase;color:var(--mut)}.k b{display:block;font:800 1.45rem Manrope;margin:4px 0 2px}.k small{color:var(--mut);font-size:.72rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font:600 .78rem Manrope;color:var(--mut);background:none;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;min-height:36px}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#000}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}@media(max-width:600px){.tg{grid-template-columns:1fr}}
+.inv{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:.85rem;color:var(--mut)}
+.inv input{background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font:600 1rem Manrope;width:170px}
+table{width:100%;border-collapse:collapse;font-size:.85rem}th{font-size:.66rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+td{padding:12px 10px;border-bottom:1px solid var(--line)}tr.r{cursor:pointer}tr.r:hover td{background:#ffffff08}
+.tw{overflow-x:auto}.b{font-size:.68rem;font-weight:800;padding:4px 10px;border-radius:999px;color:#000;white-space:nowrap}
+.news a{display:block;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:6px;padding:13px 16px;margin-bottom:8px}
+.news a.pos{border-left-color:var(--up)}.news a.neg{border-left-color:var(--dn)}.news a:hover{border-color:var(--acc)}
+.rv{opacity:0;transform:translateY(24px);transition:.7s}.rv.in{opacity:1;transform:none}
+.busy .hero .wrap{opacity:.35}.warn{background:#2a1c05;border:1px solid #6b4600;color:#ffcf70;border-radius:6px;padding:11px 16px;font-size:.82rem;margin-top:18px}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--mut);font-size:.78rem;text-align:center}
+</style></head><body>
+<nav><div class="wrap"><a class="logo" href="#top">PSX<b>·</b>AI</a>
+<div class="l"><a href="#ov">Overview</a><a href="#ch">Charts</a><a href="#fc">Forecast</a><a href="#sc">Screener</a><a href="#nw">News</a></div>
+<select id="sel" aria-label="Select stock"></select></div></nav>
+<div class="tape"><div id="tape"></div></div>
+<div id="app">
+<header class="hero" id="top"><div class="wrap">
+<div><span class="tag" id="meta"></span><h1 id="name">Loading</h1>
+<div class="price" id="price">--</div>
+<div class="row"><span class="pill" id="chg"></span><span class="pill sig" id="sig"></span></div></div>
+<div class="gauge"><svg viewBox="0 0 200 118"><defs><linearGradient id="gg"><stop offset="0" stop-color="#ef4444"/><stop offset=".5" stop-color="#ff9f00"/><stop offset="1" stop-color="#22c55e"/></linearGradient></defs>
+<path d="M12 100A88 88 0 0 1 188 100" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round"/>
+<g class="needle" id="needle" style="transform:rotate(-90deg)"><line x1="100" y1="100" x2="100" y2="30" stroke="#fafafa" stroke-width="3" stroke-linecap="round"/><circle cx="100" cy="100" r="7" fill="#fafafa"/></g></svg>
+<div class="big" id="conf">--</div><small>Ensemble confidence · 5-day direction</small>
+<div class="mini"><div><b id="gru">--</b>GRU</div><div><b id="xgb">--</b>XGBoost</div><div><b id="rsi">--</b>RSI 14</div></div></div>
+</div></header>
+<div class="wrap" id="warn"></div>
+<section id="ov"><div class="wrap rv"><h2>Overview</h2><p class="sub">Risk, return and trend at a glance.</p><div class="kpis" id="kpis"></div></div></section>
+<section id="ch"><div class="wrap rv"><h2>Charts</h2><p class="sub">Candles with EMA 20 and EMA 50, plus momentum.</p>
+<div class="bar" id="rng"></div><div class="panel"><div id="c1"></div></div>
+<div class="bar" style="margin-top:16px" id="ind"></div><div class="panel"><div id="c2"></div></div></div></section>
+<section id="fc"><div class="wrap rv"><h2>Five-year forecast</h2><p class="sub">Sequential compounding with Monte Carlo bands (P15 to P85).</p>
+<div class="inv">Invest <input id="inv" type="number" value="100000" min="1000" step="10000"></div>
+<div class="panel"><div id="c3"></div></div><div class="tg" id="tg"></div></div></section>
+<section id="sc"><div class="wrap rv"><h2>AI screener</h2><p class="sub">Every stock ranked by signal strength. Tap a row to open it.</p>
+<div class="bar" id="sec"></div><div class="panel tw"><table><thead><tr><th>Stock</th><th>Price</th><th>Day</th><th>Signal</th><th>Conf</th><th>RSI</th><th>Vol</th></tr></thead><tbody id="tb"><tr><td colspan="7">Scanning the market…</td></tr></tbody></table></div></div></section>
+<section id="nw"><div class="wrap rv"><h2>News</h2><p class="sub">Latest headlines with keyword sentiment.</p><div class="news" id="news"></div></div></section>
+</div>
+<footer><div class="wrap">GRU + XGBoost ensemble · yFinance data · Educational use only, not financial advice</div></footer>
+<script>
+const $=s=>document.querySelector(s),f=(n,d=2)=>Number(n).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}),
+col=v=>v>=0?"var(--up)":"var(--dn)",api=u=>fetch(u).then(r=>r.ok?r.json():Promise.reject(r.status)),
+SC={"STRONG BUY":"#22c55e",BUY:"#4ade80",HOLD:"#ffd740","SELL":"#fb923c","STRONG SELL":"#ef4444"};
+let S,R=504,T="rsi",SCR=[],SEC="All";
+const PL=()=>({paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",font:{color:"#9a9aa6",family:"Manrope",size:11},margin:{l:46,r:12,t:8,b:30},
+ xaxis:{gridcolor:"#1f1f28",rangeslider:{visible:false}},yaxis:{gridcolor:"#1f1f28"},showlegend:false,dragmode:innerWidth<760?false:"pan"}),CF={displayModeBar:false,responsive:true};
+const sl=a=>a.slice(-R);
+function count(el,to){const t0=performance.now();(function s(t){const k=Math.min((t-t0)/800,1);el.textContent=f(to*(1-(1-k)**3));k<1&&requestAnimationFrame(s)})(t0)}
+function kpis(){const d=S,c=(v,g,b)=>v>=g?"up":v<=b?"dn":"";return[
+["Directional edge",f((d.conf-.5)*200,0)+"%","vs coin-flip baseline",d.conf>.5?"up":"dn"],["Risk level",d.risk,"Ann. vol "+f(d.vol,1)+"%",d.risk=="Low"?"up":d.risk=="High"?"dn":""],
+["CAGR since 2015",f(d.cagr,1)+"%","Compound annual growth",d.cagr>=0?"up":"dn"],["Max drawdown",f(d.mdd,1)+"%","Worst peak-to-trough","dn"],
+["Cumulative return",(d.cum>=0?"+":"")+f(d.cum,0)+"%","Since 2015",d.cum>=0?"up":"dn"],["5-day momentum",(d.mom>=0?"+":"")+f(d.mom)+"%","Price change",d.mom>=0?"up":"dn"],
+["Trend",d.bull?"Bullish":"Bearish","EMA20 vs EMA50",d.bull?"up":"dn"],["News sentiment",d.sent>.55?"Bullish":d.sent<.45?"Bearish":"Neutral","Score "+f(d.sent),d.sent>.55?"up":d.sent<.45?"dn":""],
+["Daily VaR 95%",f(d.var95,0),"1-day loss threshold",""],["Calmar ratio",f(d.calmar),"CAGR / max drawdown",""],["GRU",f(d.gru*100,1)+"%","60-day sequence model",""],["XGBoost",f(d.xgb*100,1)+"%","Gradient boosting",""]]
+.map(([a,b,s,k])=>`<div class="k"><span>${a}</span><b class="${k}">${b}</b><small>${s}</small></div>`).join("")}
+function price(){const s=S.s,x=sl(s.d);Plotly.react("c1",[{type:"candlestick",x,open:sl(s.o),high:sl(s.h),low:sl(s.l),close:sl(s.c),increasing:{line:{color:"#22c55e"}},decreasing:{line:{color:"#ef4444"}}},
+{x,y:sl(s.e20),type:"scatter",mode:"lines",line:{color:"#ff9f00",width:1.4}},{x,y:sl(s.e50),type:"scatter",mode:"lines",line:{color:"#60a5fa",width:1.4}},
+{x,y:sl(s.v),type:"bar",yaxis:"y2",marker:{color:"#ffffff1f"}}],{...PL(),height:400,yaxis2:{overlaying:"y",showgrid:false,showticklabels:false,range:[0,Math.max(...sl(s.v))*4]}},CF)}
+function ind(){const s=S.s,x=sl(s.d),L=(y,c)=>({x,y,type:"scatter",mode:"lines",line:{color:c,width:1.6}});
+const tr=T=="rsi"?[L(sl(s.rsi),"#ff9f00")]:[L(sl(s.macd),"#60a5fa"),L(sl(s.msig),"#ff9f00")];
+const sh=T=="rsi"?[30,70].map(y=>({type:"line",xref:"paper",x0:0,x1:1,y0:y,y1:y,line:{color:y>50?"#ef4444":"#22c55e",dash:"dot",width:1}})):[];
+Plotly.react("c2",tr,{...PL(),height:230,shapes:sh},CF)}
+function fcast(){const p=S.fc,x=p.path.map((_,i)=>i/12);Plotly.react("c3",[{x,y:p.up,type:"scatter",mode:"lines",line:{width:0}},{x,y:p.lo,type:"scatter",mode:"lines",line:{width:0},fill:"tonexty",fillcolor:"#ff9f0026"},
+{x,y:p.path,type:"scatter",mode:"lines",line:{color:"#ff9f00",width:2.5}}],{...PL(),height:340,xaxis:{gridcolor:"#1f1f28",title:"Years ahead"}},CF);targets()}
+function targets(){const v=+$("#inv").value||0;$("#tg").innerHTML=[["1 year",S.fc.f1],["3 years",S.fc.f3],["5 years",S.fc.f5]].map(([l,t])=>{const r=t/S.price-1;
+return`<div class="k"><span>${l}</span><b>${f(t,0)}</b><small class="${r>=0?"up":"dn"}">${r>=0?"+":""}${f(r*100,1)}% · ${f(v*(1+r),0)} from ${f(v,0)}</small></div>`}).join("")}
+function chips(el,list,cur,fn){$(el).innerHTML=list.map(([k,l])=>`<button class="chip ${k==cur?"on":""}" data-k="${k}">${l}</button>`).join("");
+$(el).onclick=e=>{const k=e.target.dataset.k;if(k!=null)fn(isNaN(k)?k:+k)}}
+const rngs=()=>chips("#rng",[[63,"3M"],[126,"6M"],[252,"1Y"],[504,"2Y"],[1260,"5Y"]],R,k=>{R=k;rngs();price();ind()}),
+inds=()=>chips("#ind",[["rsi","RSI 14"],["macd","MACD"]],T,k=>{T=k;inds();ind()});
+function scr(){const secs=["All",...new Set(SCR.map(r=>r.sector))];chips("#sec",secs.map(s=>[s,s]),SEC,k=>{SEC=k;scr()});
+$("#tb").innerHTML=SCR.filter(r=>SEC=="All"||r.sector==SEC).map(r=>`<tr class="r" data-c="${r.code}"><td><b>${r.code}</b> <span style="color:var(--mut)">${r.name}</span></td><td>${f(r.price,1)}</td>
+<td style="color:${col(r.chg)}">${r.chg>=0?"+":""}${f(r.chg)}%</td><td><span class="b" style="background:${SC[r.signal]}">${r.signal}</span></td><td>${f(r.confidence*100,0)}%</td><td>${f(r.rsi,0)}</td><td>${f(r.ann_vol,0)}%</td></tr>`).join("")}
+async function open(code){$("#app").classList.add("busy");try{S=await api("/api/stock/"+code)}catch(e){$("#name").textContent="Data unavailable";$("#app").classList.remove("busy");return}
+history.replaceState(0,"","#"+code);$("#sel").value=code;document.title=S.code+" · PSX AI";
+$("#meta").textContent=S.code+" · "+S.sector;$("#name").textContent=S.name;count($("#price"),S.price);
+const c=$("#chg");c.textContent=(S.chg>=0?"+":"-")+f(Math.abs(S.chg))+"% today";c.style.color=col(S.chg);
+const g=$("#sig");g.textContent=S.signal;g.style.background=SC[S.signal];
+$("#needle").style.transform=`rotate(${-90+S.conf*180}deg)`;$("#conf").textContent=f(S.conf*100,1)+"%";
+$("#gru").textContent=f(S.gru*100,0)+"%";$("#xgb").textContent=f(S.xgb*100,0)+"%";$("#rsi").textContent=f(S.rsi,0);
+$("#warn").innerHTML=S.ready?"":'<div class="warn">No trained model files found on the server, so the signal uses technical indicators only.</div>';
+$("#kpis").innerHTML=kpis();rngs();inds();price();ind();fcast();
+api("/api/news/"+code).then(n=>$("#news").innerHTML=n.length?n.map(h=>`<a class="${h.tone}" href="${h.link}" target="_blank" rel="noopener">${h.title}</a>`).join(""):"<p class='sub'>No recent headlines.</p>");
+$("#app").classList.remove("busy")}
+$("#inv").oninput=()=>S&&targets();
+$("#tb").onclick=e=>{const r=e.target.closest("tr[data-c]");r&&(open(r.dataset.c),scrollTo({top:0,behavior:"smooth"}))};
+$("#sel").onchange=e=>open(e.target.value);
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add("in")),{threshold:.08});document.querySelectorAll(".rv").forEach(e=>io.observe(e));
+api("/api/stocks").then(l=>{$("#sel").innerHTML=l.map(s=>`<option value="${s.code}">${s.code} · ${s.name}</option>`).join("");open((location.hash.slice(1)||"FFC").toUpperCase())});
+api("/api/screen").then(d=>{SCR=d;scr();const t=d.map(r=>`<span>${r.code} ${f(r.price,1)}<b style="color:${col(r.chg)}">${r.chg>=0?"+":""}${f(r.chg)}%</b></span>`).join("");$("#tape").innerHTML=t+t}).catch(()=>$("#tb").innerHTML="<tr><td colspan=7>Screener unavailable.</td></tr>");
+</script></body></html>
