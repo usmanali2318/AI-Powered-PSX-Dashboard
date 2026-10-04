@@ -1,0 +1,98 @@
+{
+  "version": "v5",
+  "trained_at": "2026-10-04T21:41:25.498283",
+  "training_minutes": 22.7,
+  "n_features": 28,
+  "features": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "LogReturn",
+    "EMA20",
+    "EMA50",
+    "SMA20",
+    "SMA50",
+    "RSI",
+    "Volume_Change",
+    "MACD",
+    "MACD_Signal",
+    "BB_Width",
+    "ATR",
+    "Momentum",
+    "CumLogRet7",
+    "CumLogRet30",
+    "RollVol20",
+    "OBV_Norm",
+    "VWAP_Dev",
+    "RegimeScore",
+    "RelVol",
+    "KSE100_Ret",
+    "PKRUSD_Ret",
+    "Oil_Ret",
+    "MacroMomentum"
+  ],
+  "sequence_length": 60,
+  "seq_step": 3,
+  "multi_horizon": [
+    5,
+    10,
+    20
+  ],
+  "atr_multiplier": 0.5,
+  "label_threshold_range": [
+    0.007,
+    0.04
+  ],
+  "optimal_threshold": 0.44,
+  "architecture": "GRU(128,ret)+GRU(64,ret)+MultiHeadAttention(4h)+LayerNorm+GAP+Dense(64)+Dense(32)+Dense(1,sig)  loss=BinaryFocalCrossentropy(gamma=2)",
+  "dynamic_weights": {
+    "gru": 0.1909406681982485,
+    "xgb": 0.4127485693227406,
+    "cat": 0.3963107624790109
+  },
+  "model_aucs": {
+    "gru": 0.5234273428579753,
+    "xgb": 0.5506419210685015,
+    "cat": 0.5486250948973403
+  },
+  "metrics": {
+    "gru": {
+      "acc": 0.5418891548517768,
+      "bacc": 0.5282678631015502,
+      "f1": 0.44190219829519967,
+      "auc": 0.5324510423177545,
+      "mcc": 0.057898946793790915,
+      "prec": 0.4793187347931874,
+      "rec": 0.4099042863087807,
+      "thr": 0.47,
+      "pos_ratio": 0.3783833548149512,
+      "collapse": false
+    },
+    "xgb": {
+      "acc": 0.5247652366046769,
+      "bacc": 0.5426310325435346,
+      "f1": 0.5651221566975568,
+      "auc": 0.5539281451905945,
+      "mcc": 0.088805085808525,
+      "prec": 0.47480181200453003,
+      "rec": 0.6978776529338327,
+      "thr": 0.44,
+      "pos_ratio": 0.6503406370834101,
+      "collapse": false
+    },
+    "ensemble": {
+      "acc": 0.5302890812005155,
+      "bacc": 0.5464252082519044,
+      "f1": 0.5640061527943941,
+      "auc": 0.5620891103205977,
+      "mcc": 0.09578415920655182,
+      "prec": 0.478538283062645,
+      "rec": 0.686641697877653,
+      "thr": 0.44,
+      "pos_ratio": 0.6348738722150616,
+      "collapse": false
+    }
+  }
+}
