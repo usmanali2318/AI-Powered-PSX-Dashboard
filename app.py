@@ -31,7 +31,7 @@ from utils import (
     compute_annual_volatility, build_compound_curve,
     dynamic_compound_forecast,
     compute_advanced_volume, detect_anomalies,
-    run_backtest, quick_screen,
+    run_backtest, quick_screen, safe_download,
 )
 
 # ── Page config ───────────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ SCALER_PATH = "data/scaler.pkl"
 @st.cache_data(ttl=300, show_spinner=False)
 def fetch_data(ticker: str) -> pd.DataFrame | None:
     try:
-        df = yf.download(ticker, start="2015-01-01", progress=False, auto_adjust=True)
+        df = safe_download(ticker, start="2015-01-01")
         if df is None or df.empty:
             return None
         if isinstance(df.columns, pd.MultiIndex):
@@ -976,41 +976,6 @@ def _keyword_sentiment(headline: str) -> tuple[str, float]:
     return "NEUTRAL", 0.55
 
 
-@st.cache_resource(show_spinner=False)
-def _load_nlp_pipeline():
-    """
-    Load the NLP pipeline ONCE per session and keep it in memory.
-    Uses @st.cache_resource so it survives across Streamlit reruns.
-    Returns None if the model cannot be loaded within the timeout.
-    """
-    import concurrent.futures
-    def _build():
-        try:
-            from transformers import pipeline  # type: ignore
-            return pipeline(
-                "text-classification",
-                model="ProsusAI/finbert",
-                truncation=True, max_length=128,
-            )
-        except Exception:
-            try:
-                from transformers import pipeline  # type: ignore
-                return pipeline(
-                    "sentiment-analysis",
-                    model="distilbert-base-uncased-finetuned-sst-2-english",
-                    truncation=True, max_length=128,
-                )
-            except Exception:
-                return None
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
-        fut = ex.submit(_build)
-        try:
-            return fut.result(timeout=20)   # give the model 20 s to load
-        except concurrent.futures.TimeoutError:
-            return None
-
-
 @st.cache_data(ttl=600, show_spinner=False)
 def fetch_headlines(ticker: str) -> list[str]:
     """Fetch and deduplicate news headlines — fast, no ML."""
@@ -1026,50 +991,38 @@ def fetch_headlines(ticker: str) -> list[str]:
         return []
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def _finbert_scores(headlines: tuple) -> list[dict] | None:
+    """Run FinBERT in a child process (see sentiment_worker.py). None on any failure."""
+    if os.environ.get("PSX_FINBERT", "1") == "0":
+        return None
+    import json
+    import subprocess
+    import sys
+    try:
+        proc = subprocess.run(
+            [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "sentiment_worker.py")],
+            input=json.dumps(list(headlines)), capture_output=True, text=True, timeout=120,
+        )
+        if proc.returncode != 0:
+            return None
+        scores = json.loads(proc.stdout.strip().splitlines()[-1])
+        return scores if len(scores) == len(headlines) else None
+    except Exception:
+        return None
+
+
 def run_sentiment(headlines: list[str]) -> list[dict]:
-    """
-    Score headlines using NLP pipeline with 10-second per-batch timeout.
-    Falls back to keyword scoring instantly if the model is unavailable.
-    """
-    import concurrent.futures
-
-    results = []
-    nlp = _load_nlp_pipeline()
-
-    if nlp is None:
-        # Model not ready → keyword fallback (instant)
+    """FinBERT via an isolated subprocess; keyword scoring if it is unavailable."""
+    scores = _finbert_scores(tuple(headlines))
+    if scores is None:
+        results = []
         for h in headlines:
             label, score = _keyword_sentiment(h)
-            results.append({"headline": h, "label": label,
-                            "score": score, "method": "keyword"})
+            results.append({"headline": h, "label": label, "score": score, "method": "keyword"})
         return results
-
-    def _infer(texts):
-        raw = nlp(texts)
-        out = []
-        for h, r in zip(texts, raw):
-            label = r["label"].upper()
-            if label == "LABEL_1" or label == "POSITIVE":
-                label = "POSITIVE"
-            elif label == "LABEL_0" or label == "NEGATIVE":
-                label = "NEGATIVE"
-            else:
-                label = "NEUTRAL"
-            out.append({"headline": h, "label": label,
-                        "score": r["score"], "method": "finbert"})
-        return out
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
-        fut = ex.submit(_infer, headlines)
-        try:
-            results = fut.result(timeout=10)
-        except (concurrent.futures.TimeoutError, Exception):
-            # Inference timed out → fall back to keywords
-            for h in headlines:
-                label, score = _keyword_sentiment(h)
-                results.append({"headline": h, "label": label,
-                                "score": score, "method": "keyword"})
-    return results
+    return [{"headline": h, "label": s["label"], "score": s["score"], "method": "finbert"}
+            for h, s in zip(headlines, scores)]
 
 
 # ── Helper: metric card HTML ──────────────────────────────────────────────────
@@ -1095,7 +1048,7 @@ st.markdown('<div class="appbar">' + theme.LOGO + '<div><div class="app-title">P
 def tape_data():
     try:
         tks = [v for v in STOCK_LIST.values() if v]
-        d = yf.download(tks, period="7d", progress=False, auto_adjust=True)["Close"].ffill()
+        d = safe_download(tks, period="7d")["Close"].ffill()
         out = []
         for t in tks:
             c = d[t].dropna()

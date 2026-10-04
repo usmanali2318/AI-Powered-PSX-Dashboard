@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from utils import (engineer_features, load_scaler, ensemble_predict, quick_screen, compute_cagr,
                    compute_max_drawdown, compute_cumulative_return, compute_annual_volatility,
-                   dynamic_compound_forecast)
+                   dynamic_compound_forecast, safe_download)
 
 warnings.filterwarnings("ignore")
 B = Path(__file__).parent
@@ -37,7 +37,7 @@ def cached(k, ttl, fn):
 
 def load(code):
     def f():
-        d = yf.download(code + ".KA" if code in PSX else code, start="2015-01-01", progress=False, auto_adjust=True)
+        d = safe_download(code + ".KA" if code in PSX else code, start="2015-01-01")
         if d is None or d.empty:
             return None
         if isinstance(d.columns, pd.MultiIndex):

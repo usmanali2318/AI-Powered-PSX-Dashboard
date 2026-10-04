@@ -29,6 +29,49 @@ from sklearn.preprocessing import MinMaxScaler
 import joblib
 import os
 
+
+# ── Resilient Yahoo Finance download ──────────────────────────────────────────
+# Yahoo rate-limits (HTTP 429) and drops the crumb (HTTP 401) for shared cloud IPs.
+# safe_download retries with backoff and falls back to the last good copy on disk.
+import time as _time
+from pathlib import Path as _Path
+
+_CACHE_DIR = _Path(__file__).parent / "data" / "cache"
+
+
+def safe_download(tickers, retries: int = 3, **kwargs):
+    """yf.download with retries. Single ticker: also cached to disk, used when Yahoo fails."""
+    import yfinance as yf
+    kwargs.setdefault("progress", False)
+    kwargs.setdefault("auto_adjust", True)
+    kwargs.setdefault("threads", False)
+    single = isinstance(tickers, str)
+    cache_file = _CACHE_DIR / f"{tickers}.csv" if single else None
+
+    for attempt in range(retries):
+        try:
+            df = yf.download(tickers, **kwargs)
+            if df is not None and not df.empty:
+                if single and isinstance(df.columns, pd.MultiIndex):
+                    df.columns = df.columns.get_level_values(0)
+                if single:
+                    try:
+                        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+                        df.to_csv(cache_file)
+                    except Exception:
+                        pass
+                return df
+        except Exception:
+            pass
+        _time.sleep(1.5 * (attempt + 1))
+
+    if single and cache_file is not None and cache_file.exists():
+        try:
+            return pd.read_csv(cache_file, index_col=0, parse_dates=True)
+        except Exception:
+            return None
+    return None
+
 # ── Feature list (single source of truth — 24 features) ──────────────────────
 # Log returns (not simple %) — additive, stationary, better for ML
 FEATURES = [
@@ -251,7 +294,7 @@ def load_macro_data(start: str = "2013-01-01") -> pd.DataFrame:
     series: dict[str, pd.Series] = {}
     for col, ticker in MACRO_TICKERS.items():
         try:
-            raw = yf.download(ticker, start=start, progress=False, auto_adjust=True)
+            raw = safe_download(ticker, start=start)
             if raw is None or raw.empty:
                 raise ValueError("empty")
             if isinstance(raw.columns, pd.MultiIndex):
